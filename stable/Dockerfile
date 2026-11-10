@@ -12,11 +12,14 @@
 ARG UBUNTU_IMAGE=ubuntu:24.04@sha256:fe81560990fae86dc4743202b2cb4d3df98d0bcf949173cecef15ce1127ef852
 FROM ${UBUNTU_IMAGE} AS setup
 
-ENV IB_GATEWAY_VERSION=10.50.1f
+ENV IB_GATEWAY_VERSION=10.50.1g
 ENV IB_GATEWAY_CHANNEL=stable
 ENV IBC_VERSION=3.24.2
 ARG DEBIAN_FRONTEND=noninteractive
-ARG IB_GATEWAY_REPO="https://github.com/gnzsnz/ib-gateway-docker"
+# The installers are mirrored on THIS fork's release ibgateway-stable@<version>, byte-identical to IB's own
+# download2.interactivebrokers.com stable-standalone files (IB serves only its current stable, so a build could not
+# be repeated from there); the SHA256 values below were taken from IB's download, not from the mirror.
+ARG IB_GATEWAY_REPO="https://github.com/azgron/ib-gateway-docker"
 ARG IBC_FILE="IBCLinux-${IBC_VERSION}.zip"
 ARG IBC_REPO="https://github.com/IbcAlpha/IBC"
 ARG IBC_URL="${IBC_REPO}/releases/download/${IBC_VERSION}/${IBC_FILE}"
@@ -24,9 +27,9 @@ ARG IBC_URL="${IBC_REPO}/releases/download/${IBC_VERSION}/${IBC_FILE}"
 # installer; IbcAlpha publishes none). A version bump must change these too, or the build fails (by design).
 # IBC 3.24.2: GitHub's upload digest of IBCLinux-3.24.2.zip, re-hashed 2026-11-10.
 ARG IBC_SHA256="cc097ca1dfa75413a5fbe02e4743050af15f3308eb6a97c769b3cff9850c80c5"
-# IB Gateway 10.50.1f: gnzsnz release ibgateway-stable@10.50.1f (assets unchanged since the 2026-10-06 upload).
-ARG IB_GATEWAY_SHA256_X64="2b868362238cef71ee0f83068c6e5777ae38f59eae585ff84f75ca1d8b2e06d5"
-ARG IB_GATEWAY_SHA256_ARM="f61ff3e175c4f9c3db658274ca41165595fcf9adfbe61834f622fec8b1c6cb2d"
+# IB Gateway 10.50.1g (IB's stable build 20261109 16:10:13): hashed from IB's own stable-standalone download 2026-11-10.
+ARG IB_GATEWAY_SHA256_X64="13dc8bb05cbcec8d1b0bb0b25748447cf85863fb4b94361f57fcd350f35c7a9c"
+ARG IB_GATEWAY_SHA256_ARM="cbd1e3f9368dcc9d517e23dd72cf10db4d045e58b46882d01ab528a0d1f8e343"
 
 WORKDIR /tmp/setup
 
@@ -75,7 +78,7 @@ COPY ./scripts /root/scripts
 
 FROM ${UBUNTU_IMAGE}
 
-ENV IB_GATEWAY_VERSION=10.50.1f
+ENV IB_GATEWAY_VERSION=10.50.1g
 # IB Gateway user constants
 ARG USER_ID="${USER_ID:-1000}"
 ARG USER_GID="${USER_GID:-1000}"
